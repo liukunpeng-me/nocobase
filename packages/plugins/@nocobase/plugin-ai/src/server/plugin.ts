@@ -8,6 +8,7 @@
  */
 
 import { Plugin } from '@nocobase/server';
+import { TTSProvider } from '@nocobase/ai';
 import { AIManager } from './manager/ai-manager';
 import { AIPluginFeatureManagerImpl } from './manager/ai-feature-manager';
 import { openaiResponsesProviderOptions } from './llm-providers/openai';
@@ -30,6 +31,8 @@ import { getWorkflowCallers, createDocsSearchTool, type DocsFsCache } from './to
 import { Model } from '@nocobase/database';
 import { anthropicProviderOptions } from './llm-providers/anthropic';
 import aiSettings from './resource/aiSettings';
+import aiTTS from './resource/aiTTS';
+import { OpenAITTSProvider } from './tts-providers/openai';
 import { dashscopeProviderOptions } from './llm-providers/dashscope';
 import { ollamaProviderOptions } from './llm-providers/ollama';
 import { BuiltInManager } from './manager/built-in-manager';
@@ -69,6 +72,24 @@ export class PluginAIServer extends Plugin {
   knowledgeBaseManager = new KnowledgeBaseManager(this);
   docsFsCache: DocsFsCache = null;
   snowflake: Snowflake;
+
+  /**
+   * Build a TTSProvider instance for the given llmServices row. v1 supports
+   * OpenAI-shaped providers only; the row's `provider` field selects the class
+   * and `options.{apiKey,baseURL}` parameterize it.
+   */
+  getTTSProviderForService(serviceRow: {
+    provider?: string;
+    options?: { apiKey?: string; baseURL?: string };
+  }): TTSProvider | null {
+    const apiKey = serviceRow.options?.apiKey;
+    if (!apiKey) return null;
+    const providerName = serviceRow.provider;
+    if (providerName === 'openai' || providerName === 'openai-completions' || !providerName) {
+      return new OpenAITTSProvider({ apiKey, baseURL: serviceRow.options?.baseURL });
+    }
+    return null;
+  }
 
   /**
    * Check if the AI employee is a builder/admin-only type (e.g., Nathan, Orin).
@@ -195,6 +216,7 @@ export class PluginAIServer extends Plugin {
     this.app.resourceManager.define(aiSettings);
     this.app.resourceManager.define(aiContextDatasources);
     this.app.resourceManager.define(aiMcpClients);
+    this.app.resourceManager.define(aiTTS);
 
     this.app.resourceManager.use(
       async (ctx, next) => {
@@ -239,6 +261,9 @@ export class PluginAIServer extends Plugin {
     this.app.acl.allow('aiFiles', 'create', 'loggedIn');
     this.app.acl.allow('aiSettings', 'publicGet', 'loggedIn');
     this.app.acl.allow('ai', 'listAllEnabledModels', 'loggedIn');
+    this.app.acl.allow('aiTTS', 'synthesize', 'loggedIn');
+    this.app.acl.allow('aiTTS', 'preview', 'loggedIn');
+    this.app.acl.allow('aiTTS', 'replay', 'loggedIn');
 
     this.app.acl.allow('aiEmployees', 'listByUser', 'loggedIn');
     this.app.acl.allow('aiEmployees', 'updateUserPrompt', 'loggedIn');
