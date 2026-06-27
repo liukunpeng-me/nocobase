@@ -29,5 +29,25 @@ export default defineCollection({
       type: 'string',
       name: 'defaultModel',
     },
+    {
+      type: 'string',
+      name: 'defaultTTSServiceName',
+      defaultValue: '',
+    },
+    {
+      type: 'string',
+      name: 'defaultTTSModel',
+      defaultValue: 'tts-1',
+    },
+    {
+      type: 'string',
+      name: 'defaultTTSVoice',
+      defaultValue: 'alloy',
+    },
+    {
+      type: 'double',
+      name: 'defaultTTSSpeed',
+      defaultValue: 1,
+    },
   ],
 });

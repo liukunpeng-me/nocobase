@@ -19,5 +19,10 @@ export default defineCollection({
       type: 'text',
       name: 'prompt',
     },
+    {
+      type: 'json',
+      name: 'voiceOverride',
+      allowNull: true,
+    },
   ],
 });

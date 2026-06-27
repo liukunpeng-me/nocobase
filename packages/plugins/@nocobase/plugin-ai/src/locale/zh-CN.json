@@ -457,5 +457,13 @@
   "Restrict this AI employee to the selected models.": "限制该 AI 员工只能使用所选模型。",
   "Select model": "选择模型",
   "Select models": "选择模型",
-  "Models": "模型"
+  "Models": "模型",
+  "tts.enablePrompt": "启用 AI 语音回复",
+  "tts.unavailable": "语音合成暂不可用",
+  "tts.skippedCode": "仅代码，跳过朗读",
+  "tts.retryThis": "重试这一句",
+  "tts.defaultServiceMissing": "未配置默认 TTS 服务",
+  "tts.play": "播放",
+  "tts.stop": "停止",
+  "tts.preview": "试听"
 }

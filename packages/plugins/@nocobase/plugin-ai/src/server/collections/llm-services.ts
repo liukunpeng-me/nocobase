@@ -16,4 +16,12 @@ export default defineCollection({
   autoGenId: false,
   ...llmServices,
   sortable: true,
+  fields: [
+    ...llmServices.fields,
+    {
+      name: 'purpose',
+      type: 'string',
+      defaultValue: 'llm',
+    },
+  ],
 });
