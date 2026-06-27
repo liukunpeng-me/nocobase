@@ -61,5 +61,26 @@ export default defineCollection({
       deletable: false,
       defaultValue: {},
     },
+    {
+      type: 'string',
+      name: 'kind',
+      defaultValue: 'attachment',
+    },
+    {
+      type: 'string',
+      name: 'sourceHash',
+      length: 64,
+      index: true,
+    },
+    {
+      type: 'bigInt',
+      name: 'sourceMessageId',
+      allowNull: true,
+    },
+    {
+      type: 'integer',
+      name: 'seq',
+      allowNull: true,
+    },
   ],
 });

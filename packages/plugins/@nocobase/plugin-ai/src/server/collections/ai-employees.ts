@@ -37,5 +37,10 @@ export default defineCollection({
       sourceKey: 'username',
       targetKey: 'name',
     },
+    {
+      name: 'voiceSettings',
+      type: 'json',
+      allowNull: true,
+    },
   ],
 });

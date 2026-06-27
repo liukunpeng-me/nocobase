@@ -451,5 +451,13 @@
   "Restrict this AI employee to the selected models.": "Restrict this AI employee to the selected models.",
   "Select model": "Select model",
   "Select models": "Select models",
-  "Models": "Models"
+  "Models": "Models",
+  "tts.enablePrompt": "Enable AI voice replies",
+  "tts.unavailable": "Voice synthesis is temporarily unavailable",
+  "tts.skippedCode": "Code only — voice skipped",
+  "tts.retryThis": "Retry this sentence",
+  "tts.defaultServiceMissing": "No default TTS service configured",
+  "tts.play": "Play",
+  "tts.stop": "Stop",
+  "tts.preview": "Preview"
 }
