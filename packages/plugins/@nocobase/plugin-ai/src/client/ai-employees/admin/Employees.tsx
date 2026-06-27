@@ -38,6 +38,7 @@ import { KnowledgeBaseSettings } from './KnowledgeBaseSettings';
 import { CheckOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { EnableSwitch } from './EnableSwitch';
 import { ToolSettings } from './ToolsSettings';
+import { EmployeeVoiceSettings } from './EmployeeVoiceSettings';
 
 const AIEmployeeForm: React.FC<{
   edit?: boolean;
@@ -108,6 +109,11 @@ const AIEmployeeForm: React.FC<{
               },
             ]
           : []),
+        {
+          key: 'voice',
+          label: t('Voice'),
+          children: <EmployeeVoiceSettings />,
+        },
       ]}
     />
   );

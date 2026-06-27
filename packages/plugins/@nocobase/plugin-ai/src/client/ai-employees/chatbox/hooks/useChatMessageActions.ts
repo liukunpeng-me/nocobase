@@ -23,6 +23,7 @@ import { useAIConfigRepository } from '../../../repositories/hooks/useAIConfigRe
 import { ensureModel, getAllModels, isSameModel, isValidModel } from '../model';
 import { FlowUtils } from '../../flow';
 import { UploadFieldModel } from '@nocobase/plugin-file-manager/client';
+import { routeTTSStreamLine } from '../tts-bus';
 
 const STREAM_UPDATE_INTERVAL = 50;
 
@@ -536,6 +537,7 @@ export const useChatMessageActions = () => {
           for (const line of lines) {
             try {
               const data = JSON.parse(line.replace(/^data: /, ''));
+              routeTTSStreamLine(sessionId, data);
               processError(data);
               processResumeStreamUnavailable(data);
               if (data.from === 'main-agent') {

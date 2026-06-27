@@ -9,10 +9,11 @@
 
 import { SchemaComponent, useAPIClient, useRequest } from '@nocobase/client';
 import React, { useMemo } from 'react';
-import { Card, App } from 'antd';
+import { Card, App, Space } from 'antd';
 import { useT } from '../locale';
 import { createForm } from '@formily/core';
 import { useForm } from '@formily/react';
+import { TTSSettings } from './TTSSettings';
 
 const useFormProps = () => {
   const api = useAPIClient();
@@ -57,41 +58,44 @@ const useSubmitActionProps = () => {
 export const AdminSettings: React.FC = () => {
   const t = useT();
   return (
-    <Card>
-      <SchemaComponent
-        scope={{ t, useFormProps, useSubmitActionProps }}
-        schema={{
-          type: 'void',
-          name: 'ai-settings',
-          'x-component': 'FormV2',
-          'x-use-component-props': 'useFormProps',
-          properties: {
-            storage: {
-              type: 'string',
-              'x-decorator': 'FormItem',
-              title: '{{ t("Files storage") }}',
-              'x-component': 'RemoteSelect',
-              'x-component-props': {
-                service: {
-                  resource: 'aiSettings',
-                  action: 'listStorages',
+    <Space direction="vertical" size="middle" style={{ width: '100%' }}>
+      <Card>
+        <SchemaComponent
+          scope={{ t, useFormProps, useSubmitActionProps }}
+          schema={{
+            type: 'void',
+            name: 'ai-settings',
+            'x-component': 'FormV2',
+            'x-use-component-props': 'useFormProps',
+            properties: {
+              storage: {
+                type: 'string',
+                'x-decorator': 'FormItem',
+                title: '{{ t("Files storage") }}',
+                'x-component': 'RemoteSelect',
+                'x-component-props': {
+                  service: {
+                    resource: 'aiSettings',
+                    action: 'listStorages',
+                  },
+                  manual: false,
                 },
-                manual: false,
+                default: 'local',
               },
-              default: 'local',
-            },
-            submit: {
-              type: 'void',
-              'x-component': 'Action',
-              title: '{{t("Save")}}',
-              'x-component-props': {
-                type: 'primary',
+              submit: {
+                type: 'void',
+                'x-component': 'Action',
+                title: '{{t("Save")}}',
+                'x-component-props': {
+                  type: 'primary',
+                },
+                'x-use-component-props': 'useSubmitActionProps',
               },
-              'x-use-component-props': 'useSubmitActionProps',
             },
-          },
-        }}
-      />
-    </Card>
+          }}
+        />
+      </Card>
+      <TTSSettings />
+    </Space>
   );
 };

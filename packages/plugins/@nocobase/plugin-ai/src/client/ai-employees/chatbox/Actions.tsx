@@ -17,6 +17,10 @@ import { ActionOptions, ContextItem, Message } from '../types';
 import { useChat } from './hooks/useChat';
 import { useChatBoxStore } from './stores/chat-box';
 import { useChatConversationsStore } from './stores/chat-conversations';
+import { TTSMessageControls } from './TTSMessageControls';
+import { useMessageTTS } from './hooks/useMessageTTS';
+import { useTTSEnabled } from './hooks/useTTSEnabled';
+import { getTTSBus } from './tts-bus';
 
 export const Actions: React.FC<{
   message: Message & { messageId: string };
@@ -75,9 +79,29 @@ export const Actions: React.FC<{
     }
     return result;
   }, [plugin.aiManager, responseType, workContext]);
-  if (responseLoading || !actions.length || message.messageId !== lastEmployeeMessageKey) {
+
+  // TTS controls: visible for the last assistant message in the conversation
+  // (alongside any existing action buttons, or alone if no actions exist).
+  const isLastEmployeeMessage = message.messageId === lastEmployeeMessageKey;
+  const sseSource = useMemo(() => getTTSBus(currentConversation), [currentConversation]);
+  const { enabled } = useTTSEnabled();
+  const { state, stop, retry } = useMessageTTS({
+    messageId: message.messageId,
+    sseSource,
+    enabled,
+  });
+
+  if (responseLoading) {
     return null;
   }
+
+  if (!actions.length && !isLastEmployeeMessage) {
+    return null;
+  }
+
+  const ttsControls = isLastEmployeeMessage ? (
+    <TTSMessageControls state={state} onPlay={retry} onStop={stop} canPlay />
+  ) : null;
 
   return (
     <div
@@ -85,6 +109,7 @@ export const Actions: React.FC<{
         marginTop: '8px',
       }}
     >
+      {ttsControls}
       {actions.map((action, index) => {
         const C = action.Component;
         return C ? (
