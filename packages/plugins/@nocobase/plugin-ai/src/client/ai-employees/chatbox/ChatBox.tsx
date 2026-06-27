@@ -19,6 +19,8 @@ import {
   BugOutlined, // [AI_DEBUG]
   MenuUnfoldOutlined,
   MenuFoldOutlined,
+  SoundOutlined,
+  SoundFilled,
 } from '@ant-design/icons';
 import { useMobileLayout, useToken } from '@nocobase/client';
 const { Header, Footer, Sider } = Layout;
@@ -34,6 +36,8 @@ import { dialogController } from '../stores/dialog-controller';
 import { CodeHistory } from '../ai-coding/CodeHistory';
 import { isEngineer } from '../built-in/utils';
 import { avatars } from '../avatars';
+import { useTTSEnabled } from './hooks/useTTSEnabled';
+import { useAISettingsContext } from '../AISettingsProvider';
 
 const { Text } = Typography;
 
@@ -56,6 +60,9 @@ export const ChatBox: React.FC = () => {
 
   const { token } = useToken();
   const t = useT();
+  const ttsToggle = useTTSEnabled();
+  const aiSettingsCtx = useAISettingsContext() as { defaultTTSServiceName?: string } | undefined;
+  const ttsServiceConfigured = aiSettingsCtx?.defaultTTSServiceName !== '';
 
   useEffect(() => {
     setChatBoxRef(chatBoxRef);
@@ -139,6 +146,27 @@ export const ChatBox: React.FC = () => {
                   <Button icon={<PlusCircleOutlined />} type="text" onClick={startNewConversation} />
                 </Tooltip>
                 <UserPrompt />
+                <Tooltip
+                  arrow={false}
+                  title={
+                    ttsServiceConfigured
+                      ? ttsToggle.enabled
+                        ? t('tts.stop')
+                        : t('tts.play')
+                      : t('tts.defaultServiceMissing')
+                  }
+                >
+                  <Button
+                    icon={ttsToggle.enabled ? <SoundFilled /> : <SoundOutlined />}
+                    type="text"
+                    aria-label={ttsToggle.enabled ? t('tts.stop') : t('tts.play')}
+                    aria-pressed={ttsToggle.enabled}
+                    disabled={!ttsServiceConfigured}
+                    onClick={() => {
+                      ttsToggle.toggle().catch((err) => console.warn('tts toggle failed', err));
+                    }}
+                  />
+                </Tooltip>
                 {isEngineer(currentEmployee) && (
                   <Tooltip arrow={false} title={t('Code history')}>
                     <Button

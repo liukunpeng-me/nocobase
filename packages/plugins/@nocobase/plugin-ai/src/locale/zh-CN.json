@@ -465,5 +465,17 @@
   "tts.defaultServiceMissing": "未配置默认 TTS 服务",
   "tts.play": "播放",
   "tts.stop": "停止",
-  "tts.preview": "试听"
+  "tts.preview": "试听",
+  "Voice": "语音",
+  "Voice service": "语音服务",
+  "Inherit default": "继承默认值",
+  "Leave empty to inherit the default TTS service.": "留空以继承默认 TTS 服务。",
+  "Default TTS service": "默认 TTS 服务",
+  "Selects the LLM service used to synthesize voice replies.": "选择用于合成语音回复的 LLM 服务。",
+  "Select a service": "选择服务",
+  "TTS model": "TTS 模型",
+  "TTS voice": "TTS 音色",
+  "TTS speed": "TTS 语速",
+  "Enable": "启用",
+  "Dismiss": "忽略"
 }

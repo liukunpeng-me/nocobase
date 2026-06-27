@@ -459,5 +459,17 @@
   "tts.defaultServiceMissing": "No default TTS service configured",
   "tts.play": "Play",
   "tts.stop": "Stop",
-  "tts.preview": "Preview"
+  "tts.preview": "Preview",
+  "Voice": "Voice",
+  "Voice service": "Voice service",
+  "Inherit default": "Inherit default",
+  "Leave empty to inherit the default TTS service.": "Leave empty to inherit the default TTS service.",
+  "Default TTS service": "Default TTS service",
+  "Selects the LLM service used to synthesize voice replies.": "Selects the LLM service used to synthesize voice replies.",
+  "Select a service": "Select a service",
+  "TTS model": "TTS model",
+  "TTS voice": "TTS voice",
+  "TTS speed": "TTS speed",
+  "Enable": "Enable",
+  "Dismiss": "Dismiss"
 }

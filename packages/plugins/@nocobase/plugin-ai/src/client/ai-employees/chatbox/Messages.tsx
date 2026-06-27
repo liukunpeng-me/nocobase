@@ -9,7 +9,7 @@
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Bubble } from '@ant-design/x';
-import { Spin, Layout, Divider, Button, Space, Typography } from 'antd';
+import { Spin, Layout, Divider, Button, Space, Typography, Alert } from 'antd';
 import { RightOutlined, DownOutlined, LoadingOutlined } from '@ant-design/icons';
 import { namespace, useT } from '../../locale';
 import { useApp, useToken } from '@nocobase/client';
@@ -20,6 +20,7 @@ import { useChatToolsStore } from './stores/chat-tools';
 import { flattenMessages, formatConversationDuration, RenderedItem } from './utils';
 import { useWorkflowTasks } from './hooks/useWorkflowTasks';
 import { useChatConversationsStore } from './stores/chat-conversations';
+import { useTTSEnabled } from './hooks/useTTSEnabled';
 
 const { Text, Link } = Typography;
 
@@ -59,6 +60,8 @@ export const Messages: React.FC = () => {
   const messagesLoading = chat.use.messagesLoading();
 
   const updateTools = useChatToolsStore.use.updateTools();
+
+  const tts = useTTSEnabled();
 
   const { loadMessages, lastMessageRef } = useChatMessageActions();
   const renderedMessages = useMemo(() => flattenMessages(messages), [messages]);
@@ -256,6 +259,30 @@ export const Messages: React.FC = () => {
           }}
         />
       )}
+      {tts.promptVisible ? (
+        <Alert
+          type="info"
+          showIcon
+          message={t('tts.enablePrompt')}
+          action={
+            <Space>
+              <Button
+                size="small"
+                type="primary"
+                onClick={() => {
+                  tts.acceptPrompt().catch((err) => console.warn('tts acceptPrompt failed', err));
+                }}
+              >
+                {t('Enable')}
+              </Button>
+              <Button size="small" onClick={tts.dismissPrompt}>
+                {t('Dismiss')}
+              </Button>
+            </Space>
+          }
+          style={{ margin: '0 16px 8px 16px' }}
+        />
+      ) : null}
       {renderedMessages.length ? (
         <div>
           {renderedMessages.map((item, index) => renderItem(item, String(index)))}

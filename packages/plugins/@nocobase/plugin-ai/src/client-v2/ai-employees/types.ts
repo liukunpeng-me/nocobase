@@ -18,6 +18,13 @@ export type AIEmployee = {
   greeting?: string;
   userConfig?: {
     prompt?: string;
+    voiceOverride?: {
+      autoPlay?: boolean;
+      serviceName?: string;
+      model?: string;
+      voice?: string;
+      speed?: number;
+    };
   };
   skillSettings?: {
     tools?: { name: string; autoCall?: boolean }[];
