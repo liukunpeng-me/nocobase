@@ -39,6 +39,7 @@ import { LLMResult } from '@langchain/core/outputs';
 import { Context } from '@nocobase/actions';
 import { listAccessibleAIEmployees, serializeEmployeeSummary } from '../../ai/tools/sub-agents/shared';
 import { LLMStreamCached } from '../manager/llm-stream-manager';
+import { makeAudioChunkSink, resolveTTSRuntime, StreamingTTSCoordinator } from './tts-streaming';
 
 export interface ModelRef {
   llmService: string;
@@ -288,7 +289,18 @@ export class AIEmployee {
         sessionId: this.sessionId,
       },
     });
+    let ttsCoordinator: StreamingTTSCoordinator | undefined;
     try {
+      const ttsRuntime = await resolveTTSRuntime({
+        ctx: this.ctx,
+        plugin: this.plugin,
+        employee: this.employee,
+        userId: this.ctx.auth?.user?.id,
+      });
+      if (ttsRuntime) {
+        ttsCoordinator = new StreamingTTSCoordinator(ttsRuntime, makeAudioChunkSink(this.ctx));
+      }
+
       const { providerName, llmService, model, provider, chatContext, config, state } = await this.buildChatContext({
         messageId,
         userMessages,
@@ -311,6 +323,7 @@ export class AIEmployee {
         model,
         provider,
         responseMetadata,
+        ttsCoordinator,
       });
 
       return true;
@@ -319,6 +332,9 @@ export class AIEmployee {
       this.sendErrorResponse(err.message || 'Chat error warning');
       return false;
     } finally {
+      if (ttsCoordinator) {
+        await ttsCoordinator.end();
+      }
       await this.aiConversationsRepo.update({
         values: { llmActiveState: 'idle', read: false },
         filter: {
@@ -499,14 +515,25 @@ export class AIEmployee {
       provider: LLMProvider;
       allowEmpty?: boolean;
       responseMetadata: Map<string, any>;
+      ttsCoordinator?: StreamingTTSCoordinator;
     },
   ) {
     const aiMessageIdMap = new Map<string, string>();
-    const { signal, providerName, llmService, model, provider, responseMetadata, allowEmpty = false } = options;
+    const {
+      signal,
+      providerName,
+      llmService,
+      model,
+      provider,
+      responseMetadata,
+      allowEmpty = false,
+      ttsCoordinator,
+    } = options;
 
     let isReasoning = false;
     let gathered: any;
     signal.addEventListener('abort', async () => {
+      ttsCoordinator?.cancel();
       try {
         if (gathered?.type === 'ai') {
           const values = convertAIMessage({
@@ -558,6 +585,7 @@ export class AIEmployee {
               const parsedContent = provider.parseResponseChunk(chunk.content);
               if (parsedContent) {
                 await this.protocol.with(currentConversation).content(parsedContent);
+                ttsCoordinator?.pushToken(parsedContent);
               }
             }
 
@@ -602,6 +630,7 @@ export class AIEmployee {
           if (chunks.action === 'AfterAIMessageSaved') {
             await this.streamCached.skipped();
             aiMessageIdMap.set(currentConversation.sessionId, chunks.body.messageId);
+            ttsCoordinator?.noteMessageSaved(chunks.body.messageId);
 
             const data = responseMetadata.get(chunks.body.id);
             if (data) {

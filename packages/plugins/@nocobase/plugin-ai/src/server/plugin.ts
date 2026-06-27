@@ -8,7 +8,7 @@
  */
 
 import { Plugin } from '@nocobase/server';
-import { TTSProvider } from '@nocobase/ai';
+import { TTSManager, TTSProvider } from '@nocobase/ai';
 import { AIManager } from './manager/ai-manager';
 import { AIPluginFeatureManagerImpl } from './manager/ai-feature-manager';
 import { openaiResponsesProviderOptions } from './llm-providers/openai';
@@ -60,6 +60,7 @@ import { LLMStreamCachedManager } from './manager/llm-stream-manager';
 export class PluginAIServer extends Plugin {
   features = new AIPluginFeatureManagerImpl();
   aiManager = new AIManager(this);
+  ttsManager = new TTSManager();
   aiEmployeesManager = new AIEmployeesManager(this);
   aiConversationsManager = new AIConversationsManager(this);
   llmStreamCachedManager = new LLMStreamCachedManager(this);
