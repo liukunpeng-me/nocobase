@@ -268,6 +268,7 @@ export class PluginAIServer extends Plugin {
 
     this.app.acl.allow('aiEmployees', 'listByUser', 'loggedIn');
     this.app.acl.allow('aiEmployees', 'updateUserPrompt', 'loggedIn');
+    this.app.acl.allow('aiEmployees', 'updateUserVoiceOverride', 'loggedIn');
 
     this.app.acl.allow('aiTools', 'list', 'loggedIn');
     this.app.acl.allow('aiSkills', 'list', 'loggedIn');

@@ -26,7 +26,15 @@ export const aiSettings: ResourceOptions = {
     },
     update: async (ctx, next) => {
       const settings = await ctx.db.getRepository('aiSettings').findOne();
-      const { defaultLLMService, defaultModel, ...restValues } = ctx.action.params.values || {};
+      const {
+        defaultLLMService,
+        defaultModel,
+        defaultTTSServiceName,
+        defaultTTSModel,
+        defaultTTSVoice,
+        defaultTTSSpeed,
+        ...restValues
+      } = ctx.action.params.values || {};
       const options = settings.get('options');
       const newOptions = {
         ...options,
@@ -39,6 +47,18 @@ export const aiSettings: ResourceOptions = {
       if (defaultModel !== undefined) {
         updateData.defaultModel = defaultModel;
       }
+      if (defaultTTSServiceName !== undefined) {
+        updateData.defaultTTSServiceName = defaultTTSServiceName;
+      }
+      if (defaultTTSModel !== undefined) {
+        updateData.defaultTTSModel = defaultTTSModel;
+      }
+      if (defaultTTSVoice !== undefined) {
+        updateData.defaultTTSVoice = defaultTTSVoice;
+      }
+      if (defaultTTSSpeed !== undefined) {
+        updateData.defaultTTSSpeed = defaultTTSSpeed;
+      }
       await settings.update(updateData);
       await next();
     },
@@ -47,6 +67,10 @@ export const aiSettings: ResourceOptions = {
       const options = settings.options;
       ctx.body = {
         storage: options.storage,
+        defaultTTSServiceName: settings.defaultTTSServiceName,
+        defaultTTSModel: settings.defaultTTSModel,
+        defaultTTSVoice: settings.defaultTTSVoice,
+        defaultTTSSpeed: settings.defaultTTSSpeed,
       };
       await next();
     },

@@ -59,6 +59,8 @@ export function routeTTSStreamLine(sessionId: string, data: unknown): void {
   const v = data as Record<string, unknown>;
   const type = v.type;
   if (type !== 'audio-chunk' && type !== 'audio-chunk-failed') return;
+  const body = v.body;
+  if (!body || typeof body !== 'object') return;
   const bus = getTTSBus(sessionId);
-  bus.emit({ event: String(type), data: JSON.stringify(v) });
+  bus.emit({ event: String(type), data: JSON.stringify(body) });
 }
