@@ -16,3 +16,4 @@ export * from './skills-manager';
 export * from './mcp-manager';
 export * from './loader';
 export * from './document-loader';
+export * from './tts-manager';
